@@ -12,4 +12,5 @@ This project is distributed under MIT License.
 
 The original `spamsum` was developed by Andrew Tridgell and is licensed under
 the GNU General Public License version 2 or under the terms of the Perl Artistic
-license. It is included here for verification of the Python port.
+license. It is included here for verification of the Python port. It was copied
+without modifications from https://www.samba.org/ftp/unpacked/junkcode/spamsum/.
