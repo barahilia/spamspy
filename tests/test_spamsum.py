@@ -123,12 +123,15 @@ class RollingHashTest(HashTestBase):
 
         self.assertEqual(self.hash('ab'), h1 + h2 + h3)
 
-    def test_hash_is_signed_int_32(self):
-        self.assertLess(self.hash('abcdefg'), 0x7FFFFFFF)
-
     def test_only_last_7_chars_matter(self):
         s = 'abcdefg'
         self.assertEqual(self.hash(s), self.hash('xyz' + s))
+
+    def test_complex_input(self):
+        s = 'abacdbc'
+        h = self.hash(s)
+        twos_complement = (1 << 32) - h
+        self.assertEqual(twos_complement, 2111821412)
 
 
 class SumHashTest(HashTestBase):
@@ -165,6 +168,37 @@ class SpamsumTest(TestCase):
 
     def test_two_chars_single_out(self):
         self.assertEqual(spamsum('ba'), 'k')
+
+    def test_two_chars_out(self):
+        self.assertEqual(spamsum('ab'), 'un')
+
+    def test_trigger_at_negative_rolling_hash(self):
+        self.assertEqual(spamsum('abacdbc'), 'uZmn')
+
+    def test_long_out(self):
+        self.assertEqual(spamsum('ababaaalwqjetrqwebrt'), 'uqHRXLAHBn')
+
+    def test_block_size(self):
+        s = ('a' * 5 + 'b' * 5) * 20
+
+        minimal_block_size = 3
+        max_hash_length = 64
+        # Trigger for doubling minimal block length
+        assert len(s) > minimal_block_size * max_hash_length
+
+        self.assertEqual(
+            spamsum(s),
+            'KE2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2Ek2EH'
+        )
+
+    def test_doubled_block(self):
+        s = ('a' * 5 + 'b' * 5) * 20
+
+        minimal_block_size = 3
+        block_size = minimal_block_size * 2
+        doubled = block_size * 2
+
+        self.assertEqual(spamsum(s, doubled), 'K2')
 
 
 if __name__ == '__main__':

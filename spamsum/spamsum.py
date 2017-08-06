@@ -1,16 +1,6 @@
+#!/usr/bin/env python
+from sys import argv
 from string import ascii_lowercase, ascii_uppercase, digits
-
-
-def make_signed_int32(n):
-    all_ones =     0xFFFFFFFF
-    max_positive = 0x7FFFFFFF
-
-    n &= all_ones
-
-    if n <= max_positive:
-        return n
-    else:
-        return -1 - (all_ones ^ n)
 
 
 class RollingHash:
@@ -27,7 +17,7 @@ class RollingHash:
     @property
     def hash(self):
         h = self.h1 + self.h2 + self.h3
-        return make_signed_int32(h)
+        return h & 0xFFFFFFFF
 
     def update(self, c):
         c = ord(c)
@@ -55,15 +45,55 @@ class SumHash:
         self.hash ^= ord(c)
 
 
-def spamsum(s):
-    # XXX drop this after rolling hash is being used too
-    if not s:
-        return ''
-
-    b64 = ascii_uppercase + ascii_lowercase + digits + '+/'
-    h = SumHash()
+def _spamsum(s, block_size):
+    sh = SumHash()
+    rh = RollingHash()
 
     for c in s:
-        h.update(c)
+        sh.update(c)
+        rh.update(c)
 
-    return b64[h.hash % 64]
+        if (rh.hash % block_size) == (block_size - 1):
+            # XXX handle the case of tail overflowing - more than 64 yields
+            yield sh.hash
+            sh = SumHash()
+
+    if rh.hash != 0:
+        # XXX conforming; but this is not needed if hash was just yielded
+        yield sh.hash
+
+
+def _block_size(s):
+    block_size = 3  # mimimal block size
+    max_hash_length = 64
+
+    while block_size * max_hash_length < len(s):
+        block_size *= 2
+
+    return block_size
+
+
+def spamsum(s, block_size=None):
+    b64 = ascii_uppercase + ascii_lowercase + digits + '+/'
+
+    block_size = block_size or _block_size(s)
+    hashes = _spamsum(s, block_size)
+
+    # XXX if len(hashes) < 32 and block is not minimal - repeat for halved block
+    return ''.join(b64[h % 64] for h in hashes)
+
+
+def main():
+    path = argv[1]
+    s = open(path).read()
+
+    block_size = _block_size(s)
+
+    normal = spamsum(s, block_size)
+    shorter = spamsum(s, block_size * 2)
+
+    print '%d:%s:%s' % (block_size, normal, shorter)
+
+
+if __name__ == '__main__':
+    main()
