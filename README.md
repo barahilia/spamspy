@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/barahilia/spamspy.svg?branch=master)](https://travis-ci.org/barahilia/spamspy)
+
 # spamspy
 Implementation of spamsum/ssdeep in pure Python
 
