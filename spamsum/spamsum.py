@@ -46,6 +46,8 @@ class SumHash:
 
 
 def _spamsum(s, block_size):
+    # XXX consider making vars below be state of an object; use wrapper function
+    yielded = 0
     sh = SumHash()
     rh = RollingHash()
 
@@ -54,9 +56,11 @@ def _spamsum(s, block_size):
         rh.update(c)
 
         if (rh.hash % block_size) == (block_size - 1):
-            # XXX handle the case of tail overflowing - more than 64 yields
-            yield sh.hash
-            sh = SumHash()
+            # XXX 63 or 64? Add UT
+            if yielded < 64:
+                yield sh.hash
+                yielded += 1
+                sh = SumHash()
 
     if rh.hash != 0:
         # XXX conforming; but this is not needed if hash was just yielded
