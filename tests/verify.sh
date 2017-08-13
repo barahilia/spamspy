@@ -7,6 +7,9 @@ spamspy="$repo_dir/spamsum/spamsum.py"
 
 target_files="$repo_dir/original/spamsum.c $repo_dir/LICENSE $repo_dir/README.md"
 
+
+(cd "$repo_dir/original"; make)
+
 for target_file in $target_files; do
     echo -n "Comparing $target_file - "
 
