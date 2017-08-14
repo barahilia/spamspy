@@ -200,6 +200,18 @@ class SpamsumTest(TestCase):
 
         self.assertEqual(spamsum(s, doubled), 'K2')
 
+    def test_short_circuit_hash(self):
+        s = ('a' * 5 + 'b' * 5) * 19
+        h = spamsum(s)
+
+        max_hash_length = 64
+
+        self.assertLessEqual(len(h), max_hash_length)
+        self.assertEqual(
+            h,
+            'tgHktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnj'
+        )
+
 
 if __name__ == '__main__':
     main()

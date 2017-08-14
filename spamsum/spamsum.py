@@ -56,8 +56,7 @@ def _spamsum(s, block_size):
         rh.update(c)
 
         if (rh.hash % block_size) == (block_size - 1):
-            # XXX 63 or 64? Add UT
-            if yielded < 64:
+            if yielded < 64 - 1:
                 yield sh.hash
                 yielded += 1
                 sh = SumHash()
