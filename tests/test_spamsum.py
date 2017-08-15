@@ -2,7 +2,8 @@
 from unittest import TestCase, main
 from context import spamsum
 from spamsum.edit_dist import Costs, edit_dist
-from spamsum.spamsum import RollingHash, SumHash, spamsum
+from spamsum.spamsum import RollingHash, SumHash, spamsum, \
+    MAX_DIGEST_LEN, MIN_BLOCK_LEN
 
 
 class SimpleInsertDelete(TestCase):
@@ -160,6 +161,9 @@ class SumHashTest(HashTestBase):
 
 
 class SpamsumTest(TestCase):
+    def setUp(self):
+        self.stem_with_long_digest = 'a' * 5 + 'b' * 5
+
     def test_empty(self):
         self.assertEqual(spamsum(''), '')
 
@@ -179,12 +183,10 @@ class SpamsumTest(TestCase):
         self.assertEqual(spamsum('ababaaalwqjetrqwebrt'), 'uqHRXLAHBn')
 
     def test_block_size(self):
-        s = ('a' * 5 + 'b' * 5) * 20
+        s = self.stem_with_long_digest * 20
 
-        minimal_block_size = 3
-        max_hash_length = 64
         # Trigger for doubling minimal block length
-        assert len(s) > minimal_block_size * max_hash_length
+        self.assertGreater(len(s), MIN_BLOCK_LEN * MAX_DIGEST_LEN)
 
         self.assertEqual(
             spamsum(s),
@@ -192,23 +194,20 @@ class SpamsumTest(TestCase):
         )
 
     def test_doubled_block(self):
-        s = ('a' * 5 + 'b' * 5) * 20
+        needed_block_size = MIN_BLOCK_LEN * 2
 
-        minimal_block_size = 3
-        block_size = minimal_block_size * 2
-        doubled = block_size * 2
-
-        self.assertEqual(spamsum(s, doubled), 'K2')
+        self.assertEqual(
+            spamsum(self.stem_with_long_digest * 20, needed_block_size * 2),
+            'K2'
+        )
 
     def test_short_circuit_hash(self):
-        s = ('a' * 5 + 'b' * 5) * 19
-        h = spamsum(s)
+        s = self.stem_with_long_digest * 19
+        digest = spamsum(s)
 
-        max_hash_length = 64
-
-        self.assertLessEqual(len(h), max_hash_length)
+        self.assertLessEqual(len(digest), MAX_DIGEST_LEN)
         self.assertEqual(
-            h,
+            digest,
             'tgHktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnktEEnj'
         )
 

@@ -2,6 +2,9 @@
 from sys import argv
 from string import ascii_lowercase, ascii_uppercase, digits
 
+MAX_DIGEST_LEN = 64
+MIN_BLOCK_LEN = 3
+
 
 class RollingHash:
     _ROLLING_WINDOW = 7
@@ -45,7 +48,7 @@ class SumHash:
         self.hash ^= ord(c)
 
 
-def _spamsum(s, block_size):
+def _spamsum(s, block_len):
     # XXX consider making vars below be state of an object; use wrapper function
     yielded = 0
     sh = SumHash()
@@ -55,7 +58,7 @@ def _spamsum(s, block_size):
         sh.update(c)
         rh.update(c)
 
-        if (rh.hash % block_size) == (block_size - 1):
+        if (rh.hash % block_len) == (block_len - 1):
             if yielded < 64 - 1:
                 yield sh.hash
                 yielded += 1
@@ -66,21 +69,21 @@ def _spamsum(s, block_size):
         yield sh.hash
 
 
-def _block_size(s):
-    block_size = 3  # mimimal block size
-    max_hash_length = 64
+def _block_len(s):
+    # XXX rename all _size to _len
+    block_len = MIN_BLOCK_LEN
 
-    while block_size * max_hash_length < len(s):
-        block_size *= 2
+    while block_len * MAX_DIGEST_LEN < len(s):
+        block_len *= 2
 
-    return block_size
+    return block_len
 
 
-def spamsum(s, block_size=None):
+def spamsum(s, block_len=None):
     b64 = ascii_uppercase + ascii_lowercase + digits + '+/'
 
-    block_size = block_size or _block_size(s)
-    hashes = _spamsum(s, block_size)
+    block_len = block_len or _block_len(s)
+    hashes = _spamsum(s, block_len)
 
     # XXX if len(hashes) < 32 and block is not minimal - repeat for halved block
     return ''.join(b64[h % 64] for h in hashes)
@@ -90,12 +93,12 @@ def main():
     path = argv[1]
     s = open(path).read()
 
-    block_size = _block_size(s)
+    block_len = _block_len(s)
 
-    normal = spamsum(s, block_size)
-    shorter = spamsum(s, block_size * 2)
+    normal = spamsum(s, block_len)
+    shorter = spamsum(s, block_len * 2)
 
-    print '%d:%s:%s' % (block_size, normal, shorter)
+    print '%d:%s:%s' % (block_len, normal, shorter)
 
 
 if __name__ == '__main__':
