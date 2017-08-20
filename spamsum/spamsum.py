@@ -70,7 +70,6 @@ def _spamsum(s, block_len):
 
 
 def _block_len(s):
-    # XXX rename all _size to _len
     block_len = MIN_BLOCK_LEN
 
     while block_len * MAX_DIGEST_LEN < len(s):
@@ -95,10 +94,18 @@ def main():
 
     block_len = _block_len(s)
 
-    normal = spamsum(s, block_len)
-    shorter = spamsum(s, block_len * 2)
+    while True:
+        normal = spamsum(s, block_len)
+        shorter = spamsum(s, block_len * 2)
 
-    print '%d:%s:%s' % (block_len, normal, shorter)
+        normal_should_be_longer = len(normal) < (MAX_DIGEST_LEN / 2)
+        can_reduce_block = block_len > MIN_BLOCK_LEN
+
+        if normal_should_be_longer and can_reduce_block:
+            block_len /= 2
+        else:
+            print '%d:%s:%s' % (block_len, normal, shorter)
+            return
 
 
 if __name__ == '__main__':

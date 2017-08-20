@@ -5,13 +5,14 @@ repo_dir="`dirname $0`/.."
 original="$repo_dir/original/spamsum"
 spamspy="$repo_dir/spamsum/spamsum.py"
 
-target_files="$repo_dir/original/spamsum.c $repo_dir/LICENSE $repo_dir/README.md"
+target_files="original/spamsum.c LICENSE README.md tests/data/a_193"
 
 
 (cd "$repo_dir/original"; make)
 
 for target_file in $target_files; do
     echo -n "Comparing $target_file - "
+    target_file="$repo_dir/$target_file"
 
     original_out=`$original $target_file`
     spamspy_out=`$spamspy $target_file`
