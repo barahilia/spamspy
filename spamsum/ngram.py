@@ -1,5 +1,9 @@
+#!/usr/bin/python
+from sys import argv
+from json import loads, dumps
 from collections import Counter, defaultdict
 from itertools import chain
+
 from spamsum import spamsum
 
 BLOCK_LEN = 1000
@@ -28,3 +32,40 @@ def find_best_match(digest):
     most_common_source, = counter.most_common(1)
     source, frequency = most_common_source
     return source, frequency
+
+
+def load_registry():
+    registry.clear()
+
+    saved = loads(open('registry.dat').read())
+
+    for ngram, sources in saved:
+        registry[ngram] = set(sources)
+
+
+def dump_registry():
+    open('registry.dat', 'w').write(dumps(registry))
+
+
+def main():
+    if len(argv) != 3:
+        print 'Usage: ./ngram.py subcommand path'
+        print 'Subcommands: u, update, s, search'
+        return
+
+    load_registry()
+
+    command, path = argv[1:]
+    digest = spamsum(open(path).read())
+
+    if command in 'u', 'update':
+        update_registry(digest)
+        dump_registry()
+    elif command in 's', 'search':
+        print find_best_match(digest)
+    else:
+        print 'error: unknown command', command
+
+
+if __name__ == '__main__':
+    main()
