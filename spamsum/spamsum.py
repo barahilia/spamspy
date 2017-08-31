@@ -49,7 +49,6 @@ class SumHash:
 
 
 def _spamsum(s, block_len):
-    # XXX consider making vars below be state of an object; use wrapper function
     yielded = 0
     sh = SumHash()
     rh = RollingHash()
@@ -84,7 +83,6 @@ def spamsum(s, block_len=None):
     block_len = block_len or _block_len(s)
     hashes = _spamsum(s, block_len)
 
-    # XXX if len(hashes) < 32 and block is not minimal - repeat for halved block
     return ''.join(b64[h % 64] for h in hashes)
 
 
