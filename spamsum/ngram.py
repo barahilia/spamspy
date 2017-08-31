@@ -23,12 +23,16 @@ def _ngrams(s):
 
 def update_registry(digest, source):
     for ngram in _ngrams(digest):
-        registry[ngram].append(source)
+        registry[ngram].add(source)
 
 
 def find_best_match(digest):
     sources = chain.from_iterable(registry[ngram] for ngram in _ngrams(digest))
     counter = Counter(sources)
+
+    if not counter:
+        return None, 0
+
     most_common_source, = counter.most_common(1)
     source, frequency = most_common_source
     return source, frequency
@@ -37,14 +41,18 @@ def find_best_match(digest):
 def load_registry():
     registry.clear()
 
-    saved = loads(open('registry.dat').read())
+    try:
+        saved = loads(open('registry.dat').read())
 
-    for ngram, sources in saved:
-        registry[ngram] = set(sources)
+        for ngram, sources in saved:
+            registry[ngram] = set(sources)
+    except IOError:
+        pass
 
 
 def dump_registry():
-    open('registry.dat', 'w').write(dumps(registry))
+    data = [(ngram, list(sources)) for ngram, sources in registry.iteritems()]
+    open('registry.dat', 'w').write(dumps(data))
 
 
 def main():
@@ -58,10 +66,15 @@ def main():
     command, path = argv[1:]
     digest = spamsum(open(path).read())
 
-    if command in 'u', 'update':
-        update_registry(digest)
+    if len(digest) < NGRAM_LEN:
+        message = 'error: got digest "%s" shorter than %d bytes'
+        print message % (digest, NGRAM_LEN)
+        return
+
+    if command in ['u', 'update']:
+        update_registry(digest, path)
         dump_registry()
-    elif command in 's', 'search':
+    elif command in ['s', 'search']:
         print find_best_match(digest)
     else:
         print 'error: unknown command', command
