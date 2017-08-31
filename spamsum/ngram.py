@@ -6,13 +6,14 @@ from itertools import chain
 
 from spamsum import spamsum
 
-BLOCK_LEN = 1000
+BLOCK_LEN = 100
 NGRAM_LEN = 5
 
 registry = defaultdict(set)  # ngram -> {source...}
 
 
-def get_digest(s):
+def get_digest(path):
+    s = open(path).read()
     return spamsum(s, block_len=BLOCK_LEN)
 
 
@@ -64,7 +65,7 @@ def main():
     load_registry()
 
     command, path = argv[1:]
-    digest = spamsum(open(path).read())
+    digest = get_digest(path)
 
     if len(digest) < NGRAM_LEN:
         message = 'error: got digest "%s" shorter than %d bytes'
