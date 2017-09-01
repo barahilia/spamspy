@@ -64,7 +64,8 @@ def edit_dist(a, b, costs=None):
     return m[-1][-1]
 
 
-def print_costs_matrix(a, b):
+def _print_costs_matrix(a, b):
+    # XXX mainly for debug purposes; consider removing
     m = costs_matrix(a, b, Costs())
 
     print ' '.join('/ ' + b)
@@ -78,6 +79,11 @@ def print_costs_matrix(a, b):
         print
 
 
-if __name__ == '__main__':
+def print_costs_matrix():
     a, b = 'xyz', 'ayzb'
     print_costs_matrix(a, b)
+
+if __name__ == '__main__':
+    from sys import argv
+    a, b = argv[1:]
+    print edit_dist(a, b)
