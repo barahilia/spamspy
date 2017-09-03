@@ -5,7 +5,7 @@ repo_dir="`dirname $0`/.."
 original="$repo_dir/original/spamsum"
 spamspy="$repo_dir/spamsum/spamsum.py"
 
-target_files="original/spamsum.c LICENSE README.md tests/data/a_193"
+target_files="original/spamsum.c LICENSE README.md tests/data/*"
 
 
 (cd "$repo_dir/original"; make)
