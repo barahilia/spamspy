@@ -48,7 +48,7 @@ class SumHash:
         self.hash ^= ord(c)
 
 
-def _spamsum(s, block_len, digest_len):
+def _spamsum(s, block_len, digest_len, legacy_mode):
     yielded = 0
     sh = SumHash()
     rh = RollingHash()
@@ -64,8 +64,9 @@ def _spamsum(s, block_len, digest_len):
                 sh = SumHash()
 
     if rh.hash != 0:
-        # XXX conforming; but this is not needed if hash was just yielded
-        yield sh.hash
+        # No need to yield initial hash, unless mimicing the original
+        if legacy_mode or sh.hash != SumHash().hash:
+            yield sh.hash
 
 
 def _block_len(s):
@@ -77,11 +78,11 @@ def _block_len(s):
     return block_len
 
 
-def spamsum(s, block_len=None, digest_len=MAX_DIGEST_LEN):
+def spamsum(s, block_len=None, digest_len=MAX_DIGEST_LEN, legacy_mode=False):
     b64 = ascii_uppercase + ascii_lowercase + digits + '+/'
 
     block_len = block_len or _block_len(s)
-    hashes = _spamsum(s, block_len, digest_len)
+    hashes = _spamsum(s, block_len, digest_len, legacy_mode)
 
     return ''.join(b64[h % 64] for h in hashes)
 

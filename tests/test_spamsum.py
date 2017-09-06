@@ -174,13 +174,16 @@ class SpamsumTest(TestCase):
         self.assertEqual(spamsum('ba'), 'k')
 
     def test_two_chars_out(self):
-        self.assertEqual(spamsum('ab'), 'un')
+        self.assertEqual(spamsum('ab', legacy_mode=True), 'un')
 
     def test_trigger_at_negative_rolling_hash(self):
-        self.assertEqual(spamsum('abacdbc'), 'uZmn')
+        self.assertEqual(spamsum('abacdbc', legacy_mode=True), 'uZmn')
 
     def test_long_out(self):
-        self.assertEqual(spamsum('ababaaalwqjetrqwebrt'), 'uqHRXLAHBn')
+        self.assertEqual(
+            spamsum('ababaaalwqjetrqwebrt', legacy_mode=True),
+            'uqHRXLAHBn'
+        )
 
     def test_block_size(self):
         s = self.stem_with_long_digest * 20
