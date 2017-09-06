@@ -14,7 +14,8 @@ registry = defaultdict(set)  # ngram -> {source...}
 
 def get_digest(path):
     s = open(path).read()
-    return spamsum(s, block_len=BLOCK_LEN)
+    digest_len = len(s) / BLOCK_LEN
+    return spamsum(s, block_len=BLOCK_LEN, digest_len=digest_len)
 
 
 def _ngrams(s):
