@@ -5,6 +5,8 @@ from string import ascii_lowercase, ascii_uppercase, digits
 MAX_DIGEST_LEN = 64
 MIN_BLOCK_LEN = 3
 
+MAX_UINT32 = 0xFFFFFFFF
+
 
 class RollingHash:
     _ROLLING_WINDOW = 7
@@ -20,7 +22,7 @@ class RollingHash:
     @property
     def hash(self):
         h = self.h1 + self.h2 + self.h3
-        return h & 0xFFFFFFFF
+        return h & MAX_UINT32
 
     def update(self, c):
         c = ord(c)
@@ -34,7 +36,7 @@ class RollingHash:
         self.window[self.n % self._ROLLING_WINDOW] = c
         self.n += 1
 
-        self.h3 = (self.h3 << 5) & 0xFFFFFFFF
+        self.h3 = (self.h3 << 5) & MAX_UINT32
         self.h3 ^= c
 
 
@@ -44,7 +46,7 @@ class SumHash:
 
     def update(self, c):
         self.hash *= 0x01000193
-        self.hash &= 0xFFFFFFFF
+        self.hash &= MAX_UINT32
         self.hash ^= ord(c)
 
 
