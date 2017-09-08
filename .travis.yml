@@ -4,7 +4,8 @@ python:
   - "pypy"
 script:
   - python tests/test_spamsum.py
-  - ./tests/verify.sh
+  - ./tests/verify_spamsum.sh
+  - ./tests/verify_ngram.sh
 branches:
   only:
     - master

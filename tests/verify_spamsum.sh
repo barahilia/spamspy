@@ -1,5 +1,4 @@
 #!/bin/sh
-
 repo_dir="`dirname $0`/.."
 cd "$repo_dir"
 
@@ -21,6 +20,6 @@ for target_file in $target_files; do
         echo "OK"
     else
         echo "differ"
-        return 1
+        exit 1
     fi
 done
