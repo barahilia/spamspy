@@ -63,8 +63,6 @@ def main():
         print 'Subcommands: u, update, s, search'
         return
 
-    load_registry()
-
     command, path = argv[1:]
     digest = get_digest(path)
 
@@ -74,9 +72,11 @@ def main():
         return
 
     if command in ['u', 'update']:
+        load_registry()
         update_registry(digest, path)
         dump_registry()
     elif command in ['s', 'search']:
+        load_registry()
         print find_best_match(digest)
     else:
         print 'error: unknown command', command

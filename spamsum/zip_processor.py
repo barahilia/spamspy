@@ -4,6 +4,7 @@ from cStringIO import StringIO
 
 def extract_all(fileobject):
     zipobject = ZipFile(fileobject)
+    # Stability for extraction container types with similar internal structure
     namelist = sorted(zipobject.namelist())
     return ''.join(zipobject.read(name) for name in namelist)
 
