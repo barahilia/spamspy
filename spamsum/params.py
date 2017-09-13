@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 
-def args():
+def get_params():
     parser = ArgumentParser(description='Piecewise content-triggered hash')
 
     parser.add_argument('-W', '--ignore-whitespace', action='store_true')
@@ -20,11 +20,11 @@ def args():
     parser.add_argument('-c', action='store', dest='spamsum_hash',
         help='spamsum hash for db search (like: 24:AVP/6Lo8e5y:X09y)')
 
-    parser.add_argument('-C', action='store', dest='path_for_hash',
+    parser.add_argument('-C', action='store', dest='file_to_hash',
         help='path to file for hashing and db search')
 
     return parser.parse_args()
 
 
 if __name__ == '__main__':
-    print args()
+    print get_params()

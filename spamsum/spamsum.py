@@ -2,6 +2,8 @@
 from sys import argv
 from string import ascii_lowercase, ascii_uppercase, digits
 
+from params import get_params
+
 MAX_DIGEST_LEN = 64
 MIN_BLOCK_LEN = 3
 
@@ -89,9 +91,8 @@ def spamsum(s, block_len=None, digest_len=MAX_DIGEST_LEN, legacy_mode=False):
     return ''.join(b64[h % 64] for h in hashes)
 
 
-def main():
-    path = argv[1]
-    s = open(path).read()
+def full_spamsum(params):
+    s = open(params.file_to_hash).read()
 
     block_len = _block_len(s)
 
@@ -105,8 +106,12 @@ def main():
         if normal_should_be_longer and can_reduce_block:
             block_len /= 2
         else:
-            print '%d:%s:%s' % (block_len, normal, shorter)
-            return
+            return '%d:%s:%s' % (block_len, normal, shorter)
+
+
+def main():
+    params = get_params()
+    print full_spamsum(params)
 
 
 if __name__ == '__main__':
