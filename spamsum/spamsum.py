@@ -91,8 +91,8 @@ def spamsum(s, block_len=None, digest_len=MAX_DIGEST_LEN, legacy_mode=False):
     return ''.join(b64[h % 64] for h in hashes)
 
 
-def full_spamsum(params):
-    s = open(params.file_to_hash).read()
+def full_spamsum(file_to_hash):
+    s = open(file_to_hash).read()
 
     block_len = _block_len(s)
 
@@ -109,9 +109,41 @@ def full_spamsum(params):
             return '%d:%s:%s' % (block_len, normal, shorter)
 
 
+def hash_split(full_hash):
+    block_len, normal, shorter = full_hash.split(':')
+    return int(block_len), normal, shorter
+
+
+def hashes_match(hash1, hash2):
+    block_len_1, normal_1, shorter_1 = hash_split(hash1)
+    block_len_2, normal_2, shorter_2 = hash_split(hash2)
+
+    if block_len_1 == block_len_2:
+        return spamsum_match(normal_1, normal_2)
+    elif block_len_1 * 2 == block_len_2:
+        return spamsum_match(shorter_1, normal_2)
+    elif block_len_1 == block_len_2 * 2:
+        return spamsum_match(normal_1, shorter_2)
+
+    return False
+
+
+def search_db(dbname, spamsum_hash):
+    for line in open(dbname):
+        db_hash = line.strip()
+
+        if hashes_match(db_hash, spamsum_hash):
+            return db_hash
+
+
 def main():
     params = get_params()
-    print full_spamsum(params)
+
+    if params.dbname is not None:
+        spamsum_hash = full_spamsum(params.file_to_search)
+        print search_db(params.dbname, spamsum_hash)
+    else:
+        print full_spamsum(params.file_to_hash)
 
 
 if __name__ == '__main__':
