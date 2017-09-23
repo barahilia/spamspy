@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='spamspy',
     version='0.1dev',
-    packages=['spamsum'],
+    packages=['spamspy'],
     license='MIT License',
     long_description=open('README').read(),
 

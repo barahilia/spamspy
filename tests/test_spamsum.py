@@ -1,8 +1,9 @@
 #!/usr/bin/python
 from unittest import TestCase, main
-from context import spamsum
-from spamsum.edit_dist import Costs, edit_dist
-from spamsum.spamsum import RollingHash, SumHash, spamsum, \
+from context import spamspy
+
+from spamspy.edit_dist import Costs, edit_dist
+from spamspy.spamsum import RollingHash, SumHash, spamsum, \
     MAX_DIGEST_LEN, MIN_BLOCK_LEN
 
 

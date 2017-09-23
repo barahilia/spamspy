@@ -1,7 +1,7 @@
 #!/bin/sh
 repo_dir="`dirname $0`/.."
 repo_dir=`readlink -f "$repo_dir"`
-ngram="$repo_dir/spamsum/ngram.py"
+ngram="$repo_dir/spamspy/ngram.py"
 
 cd "$repo_dir/tests/data"
 
