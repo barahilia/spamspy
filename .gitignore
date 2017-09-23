@@ -1,8 +1,9 @@
 *.pyc
 *.o
 
-MANIFEST
+spamspy.egg-info/
 dist/
 build/
+MANIFEST
 
 original/spamsum

@@ -1,8 +1,8 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='spamspy',
-    version='0.1dev',
+    version='0.1.dev0',
     packages=['spamspy'],
     license='MIT License',
     long_description=open('README.rst').read(),
