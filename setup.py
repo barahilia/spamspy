@@ -5,7 +5,7 @@ setup(
     version='0.1dev',
     packages=['spamspy'],
     license='MIT License',
-    long_description=open('README').read(),
+    long_description=open('README.rst').read(),
 
     url='https://github.com/barahilia/spamspy',
     author='Ilia Barahovsky',
