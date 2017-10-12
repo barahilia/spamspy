@@ -3,7 +3,7 @@ from sys import argv
 from string import ascii_lowercase, ascii_uppercase, digits
 
 MAX_DIGEST_LEN = 64
-MIN_BLOCK_LEN = 3
+MIN_BLOCK_SIZE = 3
 
 MAX_UINT32 = 0xFFFFFFFF
 
@@ -50,7 +50,7 @@ class SumHash:
         self.hash ^= ord(c)
 
 
-def _spamsum(s, block_len, digest_len, legacy_mode):
+def _spamsum(s, block_size, digest_len, legacy_mode):
     yielded = 0
     sh = SumHash()
     rh = RollingHash()
@@ -59,7 +59,7 @@ def _spamsum(s, block_len, digest_len, legacy_mode):
         sh.update(c)
         rh.update(c)
 
-        if (rh.hash % block_len) == (block_len - 1):
+        if (rh.hash % block_size) == (block_size - 1):
             if yielded < (digest_len - 1):
                 yield sh.hash
                 yielded += 1
@@ -71,20 +71,20 @@ def _spamsum(s, block_len, digest_len, legacy_mode):
             yield sh.hash
 
 
-def _block_len(s):
-    block_len = MIN_BLOCK_LEN
+def _block_size(s):
+    block_size = MIN_BLOCK_SIZE
 
-    while block_len * MAX_DIGEST_LEN < len(s):
-        block_len *= 2
+    while block_size * MAX_DIGEST_LEN < len(s):
+        block_size *= 2
 
-    return block_len
+    return block_size
 
 
-def spamsum(s, block_len=None, digest_len=MAX_DIGEST_LEN, legacy_mode=False):
+def spamsum(s, block_size=None, digest_len=MAX_DIGEST_LEN, legacy_mode=False):
     b64 = ascii_uppercase + ascii_lowercase + digits + '+/'
 
-    block_len = block_len or _block_len(s)
-    hashes = _spamsum(s, block_len, digest_len, legacy_mode)
+    block_size = block_size or _block_size(s)
+    hashes = _spamsum(s, block_size, digest_len, legacy_mode)
 
     return ''.join(b64[h % 64] for h in hashes)
 
@@ -93,19 +93,19 @@ def main():
     path = argv[1]
     s = open(path).read()
 
-    block_len = _block_len(s)
+    block_size = _block_size(s)
 
     while True:
-        normal = spamsum(s, block_len, MAX_DIGEST_LEN)
-        shorter = spamsum(s, block_len * 2, MAX_DIGEST_LEN / 2)
+        normal = spamsum(s, block_size, MAX_DIGEST_LEN)
+        shorter = spamsum(s, block_size * 2, MAX_DIGEST_LEN / 2)
 
         normal_should_be_longer = len(normal) < (MAX_DIGEST_LEN / 2)
-        can_reduce_block = block_len > MIN_BLOCK_LEN
+        can_reduce_block = block_size > MIN_BLOCK_SIZE
 
         if normal_should_be_longer and can_reduce_block:
-            block_len /= 2
+            block_size /= 2
         else:
-            print '%d:%s:%s' % (block_len, normal, shorter)
+            print '%d:%s:%s' % (block_size, normal, shorter)
             return
 
 

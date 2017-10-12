@@ -6,7 +6,7 @@ from itertools import chain
 
 from spamsum import spamsum
 
-BLOCK_LEN = 100
+BLOCK_SIZE = 100
 NGRAM_LEN = 5
 
 registry = defaultdict(set)  # ngram -> {source...}
@@ -14,8 +14,8 @@ registry = defaultdict(set)  # ngram -> {source...}
 
 def get_digest(path):
     s = open(path).read()
-    digest_len = len(s) / BLOCK_LEN
-    return spamsum(s, block_len=BLOCK_LEN, digest_len=digest_len)
+    digest_len = len(s) / BLOCK_SIZE
+    return spamsum(s, block_size=BLOCK_SIZE, digest_len=digest_len)
 
 
 def _ngrams(s):

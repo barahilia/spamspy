@@ -4,7 +4,7 @@ from context import spamspy
 
 from spamspy.edit_dist import Costs, edit_dist
 from spamspy.spamsum import RollingHash, SumHash, spamsum, \
-    MAX_DIGEST_LEN, MIN_BLOCK_LEN
+    MAX_DIGEST_LEN, MIN_BLOCK_SIZE
 
 
 class SimpleInsertDelete(TestCase):
@@ -190,7 +190,7 @@ class SpamsumTest(TestCase):
         s = self.stem_with_long_digest * 20
 
         # Trigger for doubling minimal block length
-        self.assertGreater(len(s), MIN_BLOCK_LEN * MAX_DIGEST_LEN)
+        self.assertGreater(len(s), MIN_BLOCK_SIZE * MAX_DIGEST_LEN)
 
         self.assertEqual(
             spamsum(s),
@@ -198,7 +198,7 @@ class SpamsumTest(TestCase):
         )
 
     def test_doubled_block(self):
-        needed_block_size = MIN_BLOCK_LEN * 2
+        needed_block_size = MIN_BLOCK_SIZE * 2
 
         self.assertEqual(
             spamsum(self.stem_with_long_digest * 20, needed_block_size * 2),
