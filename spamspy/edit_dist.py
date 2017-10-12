@@ -1,3 +1,6 @@
+from sys import argv
+
+
 class Costs:
     insert = 1
     delete = 1
@@ -83,7 +86,11 @@ def print_costs_matrix():
     a, b = 'xyz', 'ayzb'
     print_costs_matrix(a, b)
 
-if __name__ == '__main__':
-    from sys import argv
+
+def main():
     a, b = argv[1:]
     print edit_dist(a, b)
+
+
+if __name__ == '__main__':
+    main()

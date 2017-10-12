@@ -4,6 +4,14 @@ setup(
     name='spamspy',
     version='0.1.dev0',
     packages=['spamspy'],
+    entry_points={
+        'console_scripts': [
+            'spamsum = spamspy.spamsum:main',
+            'edit_dist = spamspy.edit_dist:main',
+            'ngram_spy = spamspy.ngram:main',
+        ]
+    },
+
     license='MIT License',
     long_description=open('README.rst').read(),
 
