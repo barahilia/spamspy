@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='spamspy',
-    version='0.1.dev0',
+    version='0.1',
     packages=['spamspy'],
     entry_points={
         'console_scripts': [
